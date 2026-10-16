@@ -1,0 +1,213 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="trash_arena">
+    <!-- Physics parameters -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.005</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>200</real_time_update_rate>
+    </physics>
+
+    <!-- Plugins required for Gazebo Sim -->
+    <plugin
+      filename="gz-sim-physics-system"
+      name="gz::sim::systems::Physics">
+    </plugin>
+    <plugin
+      filename="gz-sim-user-commands-system"
+      name="gz::sim::systems::UserCommands">
+    </plugin>
+    <plugin
+      filename="gz-sim-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+
+    <!-- Sun Light -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>5 3 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Ground Plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>14 8</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>14 8</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.1 0.12 0.15 1</ambient>
+            <diffuse>0.15 0.18 0.22 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Visual Objects matching Denah Blueprint -->
+
+    <!-- MEJA 1 (Top Desk - Height reduced to 0.15m) -->
+    <model name="meja_1">
+      <static>true</static>
+      <pose>2.3 4.6 0.075 0 0 0</pose>
+      <link name="link">
+        <visual name="top"><geometry><box><size>1.6 0.5 0.15</size></box></geometry>
+          <material><ambient>0.5 0.3 0.1 1</ambient><diffuse>0.7 0.4 0.15 1</diffuse></material>
+        </visual>
+        <collision name="col"><geometry><box><size>1.6 0.5 0.15</size></box></geometry></collision>
+      </link>
+    </model>
+
+    <!-- MEJA 2 -->
+    <model name="meja_2">
+      <static>true</static>
+      <pose>2.3 3.6 0.075 0 0 0</pose>
+      <link name="link">
+        <visual name="top"><geometry><box><size>1.6 0.5 0.15</size></box></geometry>
+          <material><ambient>0.5 0.3 0.1 1</ambient><diffuse>0.7 0.4 0.15 1</diffuse></material>
+        </visual>
+        <collision name="col"><geometry><box><size>1.6 0.5 0.15</size></box></geometry></collision>
+      </link>
+    </model>
+
+    <!-- MEJA 3 -->
+    <model name="meja_3">
+      <static>true</static>
+      <pose>2.3 2.4 0.075 0 0 0</pose>
+      <link name="link">
+        <visual name="top"><geometry><box><size>1.6 0.5 0.15</size></box></geometry>
+          <material><ambient>0.5 0.3 0.1 1</ambient><diffuse>0.7 0.4 0.15 1</diffuse></material>
+        </visual>
+        <collision name="col"><geometry><box><size>1.6 0.5 0.15</size></box></geometry></collision>
+      </link>
+    </model>
+
+    <!-- MEJA 4 (Bottom Desk) -->
+    <model name="meja_4">
+      <static>true</static>
+      <pose>2.3 1.4 0.075 0 0 0</pose>
+      <link name="link">
+        <visual name="top"><geometry><box><size>1.6 0.5 0.15</size></box></geometry>
+          <material><ambient>0.5 0.3 0.1 1</ambient><diffuse>0.7 0.4 0.15 1</diffuse></material>
+        </visual>
+        <collision name="col"><geometry><box><size>1.6 0.5 0.15</size></box></geometry></collision>
+      </link>
+    </model>
+
+    <!-- LAPANGAN BOLA 1 (Large Horizontal Center Field) -->
+    <model name="lapangan_bola_1">
+      <static>true</static>
+      <pose>5.2 3.0 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>3.2 2.2 0.01</size></box></geometry>
+          <material><ambient>0.1 0.6 0.2 1</ambient><diffuse>0.2 0.8 0.3 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- LAPANGAN BOLA 2 (Vertical Right Field) -->
+    <model name="lapangan_bola_2">
+      <static>true</static>
+      <pose>7.8 3.0 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>1.6 2.2 0.01</size></box></geometry>
+          <material><ambient>0.1 0.6 0.2 1</ambient><diffuse>0.2 0.8 0.3 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Checkpoint Ring Visual Markers -->
+
+        <!-- Checkpoint Ring Visual Markers -->
+
+    <!-- START Marker (RED CIRCLE - Posisi Finish Lama) -->
+    <model name="marker_start">
+      <static>true</static>
+      <pose>9.5 0.6 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.35</radius><length>0.005</length></cylinder></geometry>
+          <material><ambient>0.9 0.1 0.1 1</ambient><diffuse>1.0 0.2 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- CP 1 Marker (BLUE CIRCLE - Posisi CP2 Lama) -->
+    <model name="marker_cp1">
+      <static>true</static>
+      <pose>8.8 0.6 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.3</radius><length>0.005</length></cylinder></geometry>
+          <material><ambient>0.0 0.5 1.0 1</ambient><diffuse>0.0 0.7 1.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- CP 2 Marker (BLUE CIRCLE - Posisi CP1 Lama) -->
+    <model name="marker_cp2">
+      <static>true</static>
+      <pose>0.7 0.6 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.3</radius><length>0.005</length></cylinder></geometry>
+          <material><ambient>0.0 0.5 1.0 1</ambient><diffuse>0.0 0.7 1.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- CP 3 Marker (BLUE CIRCLE - Posisi CP4 Lama) -->
+    <model name="marker_cp3">
+      <static>true</static>
+      <pose>0.7 5.4 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.3</radius><length>0.005</length></cylinder></geometry>
+          <material><ambient>0.0 0.5 1.0 1</ambient><diffuse>0.0 0.7 1.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- CP 4 Marker (BLUE CIRCLE - Posisi CP3 Lama) -->
+    <model name="marker_cp4">
+      <static>true</static>
+      <pose>8.8 5.4 0.005 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.3</radius><length>0.005</length></cylinder></geometry>
+          <material><ambient>0.0 0.5 1.0 1</ambient><diffuse>0.0 0.7 1.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Include Robot Model (Spawn di START Baru: 9.5, 0.6 dan Menghadap Kiri) -->
+    <include>
+      <name>trash_bot</name>
+      <uri>file:///home/yanzz/Documents/SIMULASI TRASH-DUMM/models/trash_bot</uri>
+      <pose>9.5 0.6 0.15 0 0 3.14159</pose>
+    </include>
+
+  </world>
+</sdf>

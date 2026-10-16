@@ -1,0 +1,280 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <model name="trash_bot">
+    <pose>0 0 0 0 0 0</pose>
+    <static>false</static>
+
+    <!-- Base Link / Chassis -->
+    <link name="chassis">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <mass>18.0</mass>
+        <pose>0 0 0.35 0 0 0</pose>
+        <inertia>
+          <ixx>1.10</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.10</iyy>
+          <iyz>0</iyz>
+          <izz>0.65</izz>
+        </inertia>
+      </inertial>
+
+      <!-- Visual 3D Mesh STL (Berdiri Tegak Vertikal Sesuai Gambar CAD 3) -->
+      <visual name="chassis_stl_visual">
+        <pose>0 0 0.06 1.57079632679 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://trash_bot/meshes/chassis.stl</uri>
+            <scale>1.0 1.0 1.0</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.85 0.85 0.85 1</ambient>
+          <diffuse>0.90 0.90 0.90 1</diffuse>
+          <specular>0.7 0.7 0.7 1</specular>
+        </material>
+      </visual>
+
+      <!-- Collision Body Primitif Sasis Menara (Berdiri Tegak 97cm) -->
+      <collision name="chassis_collision">
+        <pose>0 0 0.51 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.60 0.60 0.90</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- 4 Roda Kecil di Bawah Rangka Oktagonal (Sesuai Gambar CAD 2 & 3) -->
+    <!-- Front Left Wheel Link (X = +0.22, Y = +0.22, Z = 0.045) -->
+    <link name="front_left_wheel">
+      <pose>0.22 0.22 0.045 -1.57079632679 0 0</pose>
+      <inertial>
+        <mass>0.8</mass>
+        <inertia>
+          <ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.001</iyy><iyz>0</iyz>
+          <izz>0.002</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.045</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.2 0.2 0.2 1</ambient>
+          <diffuse>0.3 0.3 0.3 1</diffuse>
+        </material>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.045</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+    </link>
+
+    <!-- Front Right Wheel Link (X = +0.22, Y = -0.22, Z = 0.045) -->
+    <link name="front_right_wheel">
+      <pose>0.22 -0.22 0.045 -1.57079632679 0 0</pose>
+      <inertial>
+        <mass>0.8</mass>
+        <inertia>
+          <ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.001</iyy><iyz>0</iyz>
+          <izz>0.002</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.045</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.2 0.2 0.2 1</ambient>
+          <diffuse>0.3 0.3 0.3 1</diffuse>
+        </material>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.045</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+    </link>
+
+    <!-- Back Left Wheel Link (X = -0.22, Y = +0.22, Z = 0.045) -->
+    <link name="back_left_wheel">
+      <pose>-0.22 0.22 0.045 -1.57079632679 0 0</pose>
+      <inertial>
+        <mass>0.8</mass>
+        <inertia>
+          <ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.001</iyy><iyz>0</iyz>
+          <izz>0.002</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.045</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.2 0.2 0.2 1</ambient>
+          <diffuse>0.3 0.3 0.3 1</diffuse>
+        </material>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.045</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+    </link>
+
+    <!-- Back Right Wheel Link (X = -0.22, Y = -0.22, Z = 0.045) -->
+    <link name="back_right_wheel">
+      <pose>-0.22 -0.22 0.045 -1.57079632679 0 0</pose>
+      <inertial>
+        <mass>0.8</mass>
+        <inertia>
+          <ixx>0.001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.001</iyy><iyz>0</iyz>
+          <izz>0.002</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.045</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.2 0.2 0.2 1</ambient>
+          <diffuse>0.3 0.3 0.3 1</diffuse>
+        </material>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.045</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+    </link>
+
+    <!-- Wheel Revolute Joints -->
+    <joint name="front_left_wheel_joint" type="revolute">
+      <parent>chassis</parent>
+      <child>front_left_wheel</child>
+      <axis>
+        <xyz expressed_in="front_left_wheel">0 0 1</xyz>
+        <limit><lower>-1e16</lower><upper>1e16</upper></limit>
+      </axis>
+    </joint>
+
+    <joint name="front_right_wheel_joint" type="revolute">
+      <parent>chassis</parent>
+      <child>front_right_wheel</child>
+      <axis>
+        <xyz expressed_in="front_right_wheel">0 0 1</xyz>
+        <limit><lower>-1e16</lower><upper>1e16</upper></limit>
+      </axis>
+    </joint>
+
+    <joint name="back_left_wheel_joint" type="revolute">
+      <parent>chassis</parent>
+      <child>back_left_wheel</child>
+      <axis>
+        <xyz expressed_in="back_left_wheel">0 0 1</xyz>
+        <limit><lower>-1e16</lower><upper>1e16</upper></limit>
+      </axis>
+    </joint>
+
+    <joint name="back_right_wheel_joint" type="revolute">
+      <parent>chassis</parent>
+      <child>back_right_wheel</child>
+      <axis>
+        <xyz expressed_in="back_right_wheel">0 0 1</xyz>
+        <limit><lower>-1e16</lower><upper>1e16</upper></limit>
+      </axis>
+    </joint>
+
+    <!-- Gazebo Sim Mecanum Drive Plugin -->
+    <plugin
+      filename="gz-sim-mecanum-drive-system"
+      name="gz::sim::systems::MecanumDrive">
+      <front_left_joint>front_left_wheel_joint</front_left_joint>
+      <front_right_joint>front_right_wheel_joint</front_right_joint>
+      <back_left_joint>back_left_wheel_joint</back_left_joint>
+      <back_right_joint>back_right_wheel_joint</back_right_joint>
+      <wheel_separation>0.44</wheel_separation>
+      <wheel_base>0.44</wheel_base>
+      <wheel_radius>0.045</wheel_radius>
+      <odom_publish_frequency>20</odom_publish_frequency>
+      <topic>/cmd_vel</topic>
+      <odom_topic>/model/trash_bot/odometry</odom_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>chassis</child_frame_id>
+    </plugin>
+
+    <!-- Gazebo Sim Pose Publisher Plugin -->
+    <plugin
+      filename="gz-sim-pose-publisher-system"
+      name="gz::sim::systems::PosePublisher">
+      <publish_link_pose>true</publish_link_pose>
+      <use_pose_vector_msg>true</use_pose_vector_msg>
+      <static_publisher>false</static_publisher>
+      <update_frequency>20</update_frequency>
+    </plugin>
+  </model>
+</sdf>
