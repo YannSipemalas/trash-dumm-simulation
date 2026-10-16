@@ -1,4 +1,4 @@
-# 🤖 Gazebo Simulation & Real-Time Telemetry Bridge - Trash Sorting Robot
+# Gazebo Simulation & Real-Time Telemetry Bridge - Trash Sorting Robot
 
 Dokumentasi resmi untuk desain simulasi 3D Gazebo dan modul **Telemetry Bridge** pergerakan robot pemilah sampah (*Trash Sorting Robot*).
 
@@ -6,7 +6,7 @@ Folder Simulasi: `/home/yanzz/Documents/SIMULASI TRASH-DUMM`
 
 ---
 
-## 📌 1. Tujuan Simulasi
+## 1. Tujuan Simulasi
 
 Simulasi Gazebo ini dibuat untuk **mensinkronkan pergerakan robot virtual dengan Web Monitoring** sebelum robot fisik (*hardware*) selesai dibuat:
 1. Menyediakan dunia virtual 3D (*Gazebo World*) dengan denah arena yang presisi sesuai blueprint arena (terdiri dari 4 Meja, 2 Lapangan Bola, area START, FINISH, dan Checkpoints CP1–CP4).
@@ -52,7 +52,7 @@ $$\text{START} \longrightarrow \text{CP 1} \longrightarrow \text{CP 2} \longrigh
 
 ---
 
-## 🌐 3. Mekanisme Penarikan Data oleh Web Monitoring
+## 3. Mekanisme Penarikan Data oleh Web Monitoring
 
 1. **Pengambilan Posisi Gazebo**: Script `scripts/gazebo_telemetry_bridge.py` membaca koordinat presisi $(x, y)$ dan sudut orientasi $\theta$ robot di dalam simulasi Gazebo.
 2. **Pengiriman HTTP POST**: Script mengirimkan payload JSON telemetri ke server web setiap 200 ms:
@@ -75,7 +75,7 @@ $$\text{START} \longrightarrow \text{CP 1} \longrightarrow \text{CP 2} \longrigh
 
 ---
 
-## 📁 4. Struktur Folder Project
+## 4. Struktur Folder Project
 
 ```
 /home/yanzz/Documents/SIMULASI TRASH-DUMM/
@@ -93,7 +93,7 @@ $$\text{START} \longrightarrow \text{CP 1} \longrightarrow \text{CP 2} \longrigh
 
 ---
 
-## 🚀 5. Cara Menjalankan Simulasi
+## 5. Cara Menjalankan Simulasi
 
 ### Step 1: Pastikan Web Monitoring Server Aktif
 Buka terminal dan jalankan server backend web monitoring di port 8080:
