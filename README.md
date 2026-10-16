@@ -1,113 +1,148 @@
-# Gazebo Simulation & Real-Time Telemetry Bridge - Trash Sorting Robot
+# Trash-Dumm Gazebo Simulation — Trash Sorting Robot
 
-Dokumentasi resmi untuk desain simulasi 3D Gazebo dan modul **Telemetry Bridge** pergerakan robot pemilah sampah (*Trash Sorting Robot*).
+Simulasi 3D Gazebo dan **Telemetry Web Bridge** untuk robot pemilah sampah (*Trash Sorting Robot*).
 
-Folder Simulasi: `/home/yanzz/Documents/SIMULASI TRASH-DUMM`
+> [!NOTE]
+> **Status saat ini: MODE MANUAL (Teleop).**
+> Robot digerakkan secara manual menggunakan keyboard atau tombol di Web Dashboard.
+> Navigasi autonomous (waypoint / path planning) **belum diimplementasikan** — lihat bagian [Rencana Pengembangan](#7-rencana-pengembangan).
+
+![Desain World Gazebo](Desain%20World.png)
 
 ---
 
 ## 1. Tujuan Simulasi
 
-Simulasi Gazebo ini dibuat untuk **mensinkronkan pergerakan robot virtual dengan Web Monitoring** sebelum robot fisik (*hardware*) selesai dibuat:
-1. Menyediakan dunia virtual 3D (*Gazebo World*) dengan denah arena yang presisi sesuai blueprint arena (terdiri dari 4 Meja, 2 Lapangan Bola, area START, FINISH, dan Checkpoints CP1–CP4).
-2. Menjalankan sistem kontrol pergerakan navigasi robot secara terus-menerus (*looping*).
-3. Mengirimkan data telemetri real-time (posisi $X, Y$, checkpoint target, sisa jarak, ETA, dan baterai) ke backend **Web Monitoring** (`http://localhost:8080/api/telemetry`).
+Simulasi ini dibuat untuk **menyinkronkan pergerakan robot virtual dengan Web Monitoring** sebelum robot fisik selesai dibuat:
+
+1. Menyediakan dunia virtual 3D (*Gazebo World*) sesuai blueprint arena: 4 Meja, 2 Lapangan Bola, area START, FINISH, dan Checkpoint CP1–CP4.
+2. Menggerakkan robot secara **manual** melalui teleop (keyboard terminal atau Web Dashboard).
+3. Mengirim posisi robot (X, Y) dan data simulasi baterai secara real-time ke backend Web Monitoring (`http://localhost:8080/api/telemetry`).
 
 ---
 
-## 🔄 2. Alur Pergerakan Waypoint (Continuous Looping)
-
-Robot ditempatkan di **Area Start**, kemudian bergerak otomatis mengikuti urutan checkpoint:
-
-$$\text{START} \longrightarrow \text{CP 1} \longrightarrow \text{CP 2} \longrightarrow \text{CP 3} \longrightarrow \text{CP 4} \longrightarrow \text{CP 1} \longrightarrow \text{CP 2} \dots$$
+## 2. Alur Sistem (Mode Manual)
 
 ```
-              GAZEBO (Virtual Robot)
-                         │
-                         ▼
-                      START
-                         │
-                         ▼
-                       CP 1
-                         │
-                         ▼
-                       CP 2
-                         │
-                         ▼
-                       CP 3
-                         │
-                         ▼
-                       CP 4
-                         │
-                         └──────────────┐
-                                        │
-                                        ▼
-                                      CP 1
-                                        │
-                                 🔄 LOOPING
-                                        │
-                                        ▼
-                               CP 2 → CP 3 → CP 4
+ ┌──────────────────────────┐      ┌──────────────────────────┐
+ │ Teleop Keyboard (Terminal)│      │ Tombol Teleop Web Dashboard│
+ │  nodes/teleop_keyboard.py │      │   → POST /api/cmd_vel     │
+ └────────────┬─────────────┘      └────────────┬─────────────┘
+              │ publish Twist                    │ GET /api/cmd_vel
+              │                                  ▼
+              │                    nodes/telemetry_web_bridge.py
+              │                                  │ publish Twist
+              ▼                                  ▼
+        ROS 2 topic  /cmd_vel  &  /model/trash_bot/cmd_vel
+                              │
+                              ▼  (ros_gz_bridge)
+                  Gazebo Sim — robot trash_bot bergerak
+                              │
+                              ▼  /model/trash_bot/odometry
+               nodes/telemetry_web_bridge.py
+                              │  POST /api/telemetry (10 Hz)
+                              ▼
+               Web Monitoring — ikon robot bergerak di peta arena
 ```
 
 ---
 
-## 3. Mekanisme Penarikan Data oleh Web Monitoring
+## 3. Kontrol Teleop Keyboard
 
-1. **Pengambilan Posisi Gazebo**: Script `scripts/gazebo_telemetry_bridge.py` membaca koordinat presisi $(x, y)$ dan sudut orientasi $\theta$ robot di dalam simulasi Gazebo.
-2. **Pengiriman HTTP POST**: Script mengirimkan payload JSON telemetri ke server web setiap 200 ms:
-   ```json
-   {
-     "connected": true,
-     "cameraConnected": true,
-     "operationState": "PATROLLING",
-     "posX": 2.45,
-     "posY": 3.12,
-     "currentCP": "CP1",
-     "nextCP": "CP2",
-     "distanceToNext": 3.8,
-     "etaSeconds": 7,
-     "batteryVoltage": 12.4,
-     "batteryPct": 95
-   }
-   ```
-3. **Rendering Dashboard Web**: Server `server.py` menanti data telemetri dan memperbarui state global. Web Frontend (`js/app.js` & `js/arena.js`) menarik data tersebut dan menggerakkan ikon robot pada canvas denah secara real-time.
+| Tombol | Aksi | Kecepatan |
+|---|---|---|
+| `W` | Maju | +0.5 m/s |
+| `S` | Mundur | -0.5 m/s |
+| `Q` | Geser kiri (strafe) | +0.5 m/s |
+| `E` | Geser kanan (strafe) | -0.5 m/s |
+| `A` | Putar kiri | +0.8 rad/s |
+| `D` | Putar kanan | -0.8 rad/s |
+| `SPACE` / `X` / `K` | STOP | 0 |
+| `Ctrl+C` | Keluar | — |
 
 ---
 
-## 4. Struktur Folder Project
+## 4. Data Telemetri ke Web Monitoring
+
+`telemetry_web_bridge.py` membaca odometri Gazebo, mengubahnya ke koordinat arena (titik START = `9.50, 0.60`), lalu mengirim JSON berikut setiap **100 ms (10 Hz)**:
+
+```json
+{
+  "connected": true,
+  "cameraConnected": true,
+  "operationState": "Ready",
+  "posX": 9.50,
+  "posY": 0.60,
+  "currentCP": "START",
+  "nextCP": "-",
+  "distanceToNext": 0.0,
+  "etaSeconds": 0,
+  "batteryVoltage": 12.5,
+  "batteryPct": 95
+}
+```
+
+| Field | Keterangan |
+|---|---|
+| `posX`, `posY` | ✅ Posisi nyata dari odometri Gazebo |
+| `batteryVoltage`, `batteryPct` | ⚠️ Simulasi (turun perlahan seiring waktu) |
+| `currentCP`, `nextCP`, `distanceToNext`, `etaSeconds` | ⚠️ Nilai tetap — belum dihitung karena belum ada navigasi autonomous |
+
+---
+
+## 5. Struktur Folder
 
 ```
-/home/yanzz/Documents/SIMULASI TRASH-DUMM/
+SIMULASI TRASH-DUMM/
 ├── models/
 │   └── trash_bot/
-│       ├── model.config         # Konfigurasi model Gazebo
-│       └── model.sdf            # Model SDF 3D Robot Differential Drive
+│       ├── meshes/                  # Mesh 3D robot
+│       ├── model.config             # Konfigurasi model Gazebo
+│       └── model.sdf                # Model SDF robot
 ├── worlds/
-│   └── trash_arena.sdf          # World Gazebo (4 Meja, 2 Lapangan, CP1-CP4, Start, Finish)
-├── scripts/
-│   └── gazebo_telemetry_bridge.py # Controller Navigasi Waypoint & Telemetry POST Bridge
-├── run_simulation.sh            # Script Shell untuk menjalankan Simulasi + Bridge
-└── README.md                    # Dokumentasi lengkap
+│   └── trash_arena.sdf              # World arena (4 Meja, 2 Lapangan, CP1–CP4, Start, Finish)
+├── nodes/
+│   ├── telemetry_web_bridge.py      # Bridge: odometri → Web, cmd_vel Web → ROS 2
+│   └── teleop_keyboard.py           # Kontrol manual via keyboard (WASD + QE)
+├── run_simulation.sh                # Menjalankan Gazebo + ros_gz_bridge + telemetry bridge
+└── README.md
 ```
 
 ---
 
-## 5. Cara Menjalankan Simulasi
+## 6. Cara Menjalankan
 
-### Step 1: Pastikan Web Monitoring Server Aktif
-Buka terminal dan jalankan server backend web monitoring di port 8080:
+**Kebutuhan:** Ubuntu 24.04, ROS 2 Jazzy (atau Humble), Gazebo Sim (`gz`), paket `ros_gz_bridge`.
+
+### Step 1 — (Opsional) Jalankan Web Monitoring Server
 ```bash
 cd "/home/yanzz/Documents/WEB MONITORING TRASHBOT"
 python3 server.py
 ```
 
-### Step 2: Menjalankan Simulasi Gazebo & Telemetry Bridge
-Buka terminal baru dan jalankan script utama:
+### Step 2 — Jalankan Simulasi Gazebo
 ```bash
 cd "/home/yanzz/Documents/SIMULASI TRASH-DUMM"
 ./run_simulation.sh
 ```
 
-### Step 3: Buka Web Monitoring
-Akses browser ke `http://localhost:8080`. Ikon robot pada peta arena 2D akan bergerak secara otomatis dan sinkron sesuai dengan posisi robot simulasi Gazebo!
+### Step 3 — Gerakkan Robot dengan Keyboard (terminal baru)
+```bash
+source /opt/ros/jazzy/setup.bash
+cd "/home/yanzz/Documents/SIMULASI TRASH-DUMM"
+python3 nodes/teleop_keyboard.py
+```
+
+### Step 4 — Buka Web Monitoring
+Akses `http://localhost:8080`. Ikon robot di peta arena bergerak sesuai posisi robot di Gazebo. Robot juga bisa digerakkan dari tombol teleop di dashboard.
+
+Tekan **Ctrl+C** di terminal simulasi untuk menghentikan semua proses.
+
+---
+
+## 7. Rencana Pengembangan
+
+- [ ] Navigasi autonomous mengikuti waypoint: `START → CP1 → CP2 → CP3 → CP4 → (looping)`
+- [ ] Perhitungan `currentCP`, `nextCP`, `distanceToNext`, dan `etaSeconds` secara real-time
+- [ ] Integrasi kamera / AI vision untuk deteksi sampah
+- [ ] Path `SIM_DIR` di `run_simulation.sh` dibuat relatif agar bisa dijalankan di komputer lain
